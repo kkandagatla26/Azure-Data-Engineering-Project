@@ -1,0 +1,45 @@
+{
+    "name": "ls_sftp",
+    "properties": {
+        "parameters": {
+            "host_name": {
+                "type": "string",
+                "defaultValue": "localhost"
+            },
+            "port": {
+                "type": "int",
+                "defaultValue": 22
+            },
+            "user_name": {
+                "type": "string",
+                "defaultValue": "kavithadp@gmail.com"
+            },
+            "secret_name": {
+                "type": "string",
+                "defaultValue": "sftp-password"
+            }
+        },
+        "annotations": [],
+        "type": "Sftp",
+        "typeProperties": {
+            "host": "@{linkedService().host_name}",
+            "port": "@linkedService().port",
+            "skipHostKeyValidation": true,
+            "authenticationType": "Basic",
+            "userName": "kavithadp@gmail.com",
+            "password": {
+                "type": "AzureKeyVaultSecret",
+                "store": {
+                    "referenceName": "ls_keyvault",
+                    "type": "LinkedServiceReference"
+                },
+                "secretName": "sftp-password"
+            }
+        },
+        "connectVia": {
+            "referenceName": "HOL-SHIR",
+            "type": "IntegrationRuntimeReference"
+        }
+    },
+    "type": "Microsoft.DataFactory/factories/linkedservices"
+}

@@ -1,0 +1,54 @@
+{
+    "name": "ls_mysql",
+    "properties": {
+        "parameters": {
+            "server_name": {
+                "type": "string",
+                "defaultValue": "localhost"
+            },
+            "port": {
+                "type": "string",
+                "defaultValue": "3306"
+            },
+            "database_name": {
+                "type": "string",
+                "defaultValue": "fmcg"
+            },
+            "secret_name": {
+                "type": "string",
+                "defaultValue": "mysql-pwd"
+            },
+            "host_name": {
+                "type": "string",
+                "defaultValue": "kavitha"
+            }
+        },
+        "annotations": [],
+        "type": "MySql",
+        "typeProperties": {
+            "server": "@{linkedService().server_name}",
+            "port": "@{linkedService().port}",
+            "database": "@{linkedService().database_name}",
+            "username": "@{linkedService().host_name}",
+            "sslMode": 1,
+            "useSystemTrustStore": 0,
+            "password": {
+                "type": "AzureKeyVaultSecret",
+                "store": {
+                    "referenceName": "ls_keyvault",
+                    "type": "LinkedServiceReference"
+                },
+                "secretName": {
+                    "value": "@linkedService().secret_name",
+                    "type": "Expression"
+                }
+            },
+            "driverVersion": "v2"
+        },
+        "connectVia": {
+            "referenceName": "HOL-SHIR",
+            "type": "IntegrationRuntimeReference"
+        }
+    },
+    "type": "Microsoft.DataFactory/factories/linkedservices"
+}

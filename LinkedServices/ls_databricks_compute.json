@@ -1,0 +1,17 @@
+{
+    "name": "ls_databricks_compute",
+    "properties": {
+        "annotations": [],
+        "type": "AzureDatabricks",
+        "typeProperties": {
+            "domain": "https://adb-712858837150967.7.azuredatabricks.net",
+            "authentication": "MSI",
+            "workspaceResourceId": "/subscriptions/961a3b47-8a46-4e61-995d-2fd8e00ca926/resourceGroups/HOL-SupplyChain-Dev/providers/Microsoft.Databricks/workspaces/HOL-AzureDatabricks-dev",
+            "existingClusterId": "0120-194510-yzkcqspg"
+        },
+        "connectVia": {
+            "referenceName": "HOL-SHIR",
+            "type": "IntegrationRuntimeReference"
+        }
+    }
+}

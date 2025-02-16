@@ -1,0 +1,49 @@
+{
+    "name": "ls_sqlserver",
+    "properties": {
+        "parameters": {
+            "server_name": {
+                "type": "string",
+                "defaultValue": "LAPTOP-KEND3HNQ\\SQLEXPRESS"
+            },
+            "database_name": {
+                "type": "string",
+                "defaultValue": "AdventureWorksDW2022"
+            },
+            "user_name": {
+                "type": "string",
+                "defaultValue": "kavitha"
+            },
+            "secret_name": {
+                "type": "string",
+                "defaultValue": "sqlserver-pwd"
+            }
+        },
+        "annotations": [],
+        "type": "SqlServer",
+        "typeProperties": {
+            "server": "@{linkedService().server_name}",
+            "database": "@{linkedService().database_name}",
+            "encrypt": "optional",
+            "trustServerCertificate": false,
+            "authenticationType": "SQL",
+            "userName": "@{linkedService().user_name}",
+            "password": {
+                "type": "AzureKeyVaultSecret",
+                "store": {
+                    "referenceName": "ls_keyvault",
+                    "type": "LinkedServiceReference"
+                },
+                "secretName": {
+                    "value": "@linkedService().secret_name",
+                    "type": "Expression"
+                }
+            }
+        },
+        "connectVia": {
+            "referenceName": "HOL-SHIR",
+            "type": "IntegrationRuntimeReference"
+        }
+    },
+    "type": "Microsoft.DataFactory/factories/linkedservices"
+}

@@ -1,0 +1,44 @@
+{
+    "name": "ds_output_mysql_parquet",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "ls_adls",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "container_name": {
+                "type": "string"
+            },
+            "adls_filepath": {
+                "type": "string"
+            },
+            "table_name": {
+                "type": "string"
+            }
+        },
+        "folder": {
+            "name": "hol_fmcg"
+        },
+        "annotations": [],
+        "type": "Parquet",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "fileName": {
+                    "value": "@dataset().table_name",
+                    "type": "Expression"
+                },
+                "folderPath": {
+                    "value": "@dataset().adls_filepath",
+                    "type": "Expression"
+                },
+                "fileSystem": {
+                    "value": "@dataset().container_name",
+                    "type": "Expression"
+                }
+            },
+            "compressionCodec": "snappy"
+        },
+        "schema": []
+    }
+}

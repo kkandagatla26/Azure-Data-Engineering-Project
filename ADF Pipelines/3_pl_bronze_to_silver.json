@@ -1,0 +1,172 @@
+{
+    "name": "3_pl_bronze_to_silver",
+    "properties": {
+        "activities": [
+            {
+                "name": "silver layer ingestion",
+                "type": "DatabricksNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 2,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/databricks_notebooks/bronze to silver ingestion",
+                    "baseParameters": {
+                        "LoadID": {
+                            "value": "@pipeline()?.TriggeredByPipelineRunId",
+                            "type": "Expression"
+                        },
+                        "bronze_schema": {
+                            "value": "@pipeline().parameters.metadata_values.bronze_schema",
+                            "type": "Expression"
+                        },
+                        "bronze_table": {
+                            "value": "@pipeline().parameters.metadata_values.bronze_tbl",
+                            "type": "Expression"
+                        },
+                        "silver_schema": {
+                            "value": "@pipeline().parameters.metadata_values.silver_schema",
+                            "type": "Expression"
+                        },
+                        "silver_table": {
+                            "value": "@pipeline().parameters.metadata_values.silver_tbl",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_databricks_compute",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "silver layer ingestion failure log",
+                "type": "DatabricksNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "silver layer ingestion",
+                        "dependencyConditions": [
+                            "Failed"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 2,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/databricks_notebooks/log_record_tbl_insert",
+                    "baseParameters": {
+                        "env": {
+                            "value": "@pipeline().globalParameters.env",
+                            "type": "Expression"
+                        },
+                        "pipeLineName": {
+                            "value": "@pipeline().Pipeline",
+                            "type": "Expression"
+                        },
+                        "logMessage": {
+                            "value": "@concat('Failed to load records from ',pipeline().parameters.metadata_values.bronze_tbl, 'to silver layer table ', pipeline().parameters.metadata_values.silver_tbl)\n",
+                            "type": "Expression"
+                        },
+                        "status": {
+                            "value": "@concat('Error:',activity('silver layer ingestion').Error.message)",
+                            "type": "Expression"
+                        },
+                        "triggerType": {
+                            "value": "@pipeline().TriggerId",
+                            "type": "Expression"
+                        },
+                        "loadId": {
+                            "value": "@pipeline().RunId",
+                            "type": "Expression"
+                        },
+                        "logTimeStamp": {
+                            "value": "@formatDateTime(convertFromUtc(utcNow(), 'Central Standard Time'),'yyyy-MM-dd HH:mm:ss')",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_databricks_compute",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "silver layer ingestion success log",
+                "type": "DatabricksNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "silver layer ingestion",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 2,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/databricks_notebooks/log_record_tbl_insert",
+                    "baseParameters": {
+                        "env": {
+                            "value": "@pipeline().globalParameters.env",
+                            "type": "Expression"
+                        },
+                        "pipeLineName": {
+                            "value": "@pipeline().Pipeline",
+                            "type": "Expression"
+                        },
+                        "logMessage": {
+                            "value": "@concat('Inserted ', string(activity('silver layer ingestion').output.runOutput[1]), ' records (', string(activity('silver layer ingestion').output.runOutput[0]), ' duplicate records removed) in silver layer table ', pipeline().parameters.metadata_values.silver_tbl)\n",
+                            "type": "Expression"
+                        },
+                        "status": {
+                            "value": "success",
+                            "type": "Expression"
+                        },
+                        "triggerType": {
+                            "value": "@pipeline().TriggerId",
+                            "type": "Expression"
+                        },
+                        "loadId": {
+                            "value": "@pipeline().RunId",
+                            "type": "Expression"
+                        },
+                        "logTimeStamp": {
+                            "value": "@formatDateTime(convertFromUtc(utcNow(), 'Central Standard Time'),'yyyy-MM-dd HH:mm:ss')",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_databricks_compute",
+                    "type": "LinkedServiceReference"
+                }
+            }
+        ],
+        "parameters": {
+            "metadata_values": {
+                "type": "object"
+            }
+        },
+        "folder": {
+            "name": "pl_fmcg"
+        },
+        "annotations": []
+    }
+}
