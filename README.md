@@ -59,7 +59,9 @@ Load the gold level data and run the pipeline.
 - Pipeline retrieves the Table Names from the gold folder.
 - For each table, A Stored Procedure is executed which creates and updates View in Azure SQL Database.
 
-## Part 4: Data Reporting
+## Part 4: Triggers and Email Notifications
+
+## Part 5: Data Reporting
 Finally, load the data from the views using Microsoft Power BI. The Data is retrieved using DirectQuery to automatically run and update from the Cloud Pipelines.
 
 An Interactive Dashboard is created to showcase the supply chain customer order figures
